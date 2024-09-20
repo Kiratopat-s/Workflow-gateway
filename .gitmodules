@@ -1,0 +1,8 @@
+[submodule "workflow-fe"]
+	path = workflow-fe
+	url = https://github.com/Kiratopat-s/workflow-fe
+	branch = Kirato
+[submodule "midterm-test"]
+	path = midterm-test
+	url = https://github.com/Kiratopat-s/midterm-test
+	branch = main

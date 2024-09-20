@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  nextjs:
+    build:
+      context: ./workflow-fe
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    depends_on:
+      - gin
+    networks:
+      - app-network
+    restart: always
+
+  gin:
+    build:
+      context: ./midterm-test
+      dockerfile: Dockerfile
+    ports:
+      - "2024:2024"
+    environment:
+      - PORT=2024
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/iws
+      - JWT_SECRET=kirato
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=iws
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+    restart: always
+    command: sh -c 'cd migrations && goose postgres "postgres://postgres:postgres@postgres:5432/iws" up && cd /app/ && pwd && ls && go run cmd/main.go'
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=iws
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    restart: always
+
+volumes:
+  pgdata:
+
+networks:
+  app-network:
+    driver: bridge
